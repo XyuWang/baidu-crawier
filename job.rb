@@ -36,7 +36,6 @@ def process
         return
       end
   
-    
       Name.transaction do
         Thread.current['name'] = Name.uncompleted.first
         Thread.current['name'].update completed: true
@@ -61,9 +60,7 @@ def process
     other_links = html.css '#rs table th a'
 
     other_links.each do |link|
-      #href = link.attr("href")
       title = link.text
-      #  puts "#{title}    http://www.baidu.com#{href}"
       puts "新增加: #{title}"
       Name.create name: title
     end
@@ -96,22 +93,3 @@ end
 threads.each do |thread|
   thread.join
 end
-
-=begin
-def analy page
-  byebug
-  a = 10
-  
-  page.scan /<(\w+)[^>]*class="a"[^>]*>([^<]*<(\w+)>[\s\S]+<\/\3>[^>]*)*<\/\1>/
-  /<(\w+)[^>]*class="result.*container"[^>]*>([^<]*<(\w+)>[\s\S]+<\/\3>[^>]*)*<\/\1>/
-  <div class="result.*container
-end
-
-establish_conn
-
-key = '计算机'
-uri = URI(URI.encode("http://www.baidu.com/s?wd=#{key}"))
-response = Net::HTTP.get_response(uri)
-analy response.body
-#Net::HTTP.get_print(uri)
-=end
