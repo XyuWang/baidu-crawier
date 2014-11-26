@@ -25,25 +25,31 @@ def process
   loop do
     $mutex.synchronize do
       if Name.uncompleted.blank?
-        sleep 5
-        Thread.current['retry'] ||= 0 
-        Thread.current['retry'] += 1
-        if Thread.current['retry'] < 3
-          puts '线程正在等待..'
-          next
-        end
-        puts '线程执行完毕.'
-        return
-      end
-  
-      Name.transaction do
-        Thread.current['name'] = Name.uncompleted.first
-        Thread.current['name'].update completed: true
-        Thread.current['name'].save
+        Thread.current['wait'] = true
+      else
+        Thread.current['wait'] = false
+        Name.transaction do
+          Thread.current['name'] = Name.uncompleted.first
+          Thread.current['name'].update completed: true
+          Thread.current['name'].save
+        end      
       end
     end
     
-    return unless Thread.current['name']
+    if Thread.current['wait']
+      sleep 1
+      Thread.current['retry'] ||= 0 
+      Thread.current['retry'] += 1
+      if Thread.current['retry'] < 10
+        puts '线程正在等待..'
+        next
+      else
+        puts '线程执行完毕.'
+        return
+      end
+    end
+    
+    Thread.current['retry'] = 0 
     
     puts "当前: #{Thread.current['name'].id} #{Thread.current['name'].name}"
     url = URI(URI.encode("http://www.baidu.com/s?wd=#{Thread.current['name'].name}"))
@@ -83,6 +89,7 @@ Name.create name: key unless Name.exists? name: key
 
 threads = []
 5.times do
+  sleep 1
   threads << Thread.new do
     process
   end
