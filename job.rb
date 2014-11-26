@@ -66,8 +66,6 @@ def process
     end
   end
   rescue StandardError => e
-     puts e
-     puts e.backtrace
 #    byebug
     Name.transaction do
       Thread.current['name'].links.destroy_all
