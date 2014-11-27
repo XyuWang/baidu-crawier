@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'active_record'
 require 'mysql2'
 
@@ -24,4 +27,5 @@ class Link < ActiveRecord::Base
   validates :name_id, :title, :href, presence: true 
 end
 
+I18n.enforce_available_locales = false
 establish_conn

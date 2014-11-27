@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 require 'byebug'
 require './database'
 require 'nokogiri'
